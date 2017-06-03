@@ -1,0 +1,93 @@
+version: '2'
+
+services:
+
+  unifi:
+    container_name: unifi
+    image: jacobalberty/unifi:unifi5
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - /mnt/main/unifi/data:/var/lib/unifi
+      - /mnt/main/unifi/logs:/var/log/unifi
+    environment:
+      TZ: America/Los_Angeles
+
+  netdata:
+    container_name: netdata
+    image: titpetric/netdata
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    cap_add:
+      - SYS_PTRACE
+    ports:
+      - 19999:19999
+
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      TZ: America/Los_Angeles
+      PLEX_CLAIM: ${PLEX_CLAIM}
+    volumes:
+      - /mnt/main/plex/config:/config:rw
+      - /mnt/main/plex/transcode:/transcode:rw
+      - /mnt/main:/data:rw
+
+ syncthing:
+   container_name: syncthing
+   image: joeybaker/syncthing
+   network_mode: host
+   restart: always
+   ports:
+     - 8080:8080
+     - 22000:22000
+     - 21027:21027/udp
+   volumes:
+     - /mnt/main/syncthing/config:/srv/config:rw
+     - /mnt/main/syncthing/data:/srv/data:rw
+
+  transmission:
+    container_name: transmission
+    image: haugene/transmission-openvpn
+    restart: always
+    privileged: true # todo: add syscap for tun/tap
+    ports:
+      - 9091:9091
+    environment:
+      - TZ=America/Los_Angeles
+      - OPENVPN_PROVIDER=${OPENVPN_PROVIDER}
+      - OPENVPN_CONFIG=${OPENVPN_CONFIG}
+      - OPENVPN_USERNAME=${OPENVPN_USERNAME}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - TRANSMISSION_BLOCKLIST_ENABLED=true
+      - TRANSMISSION_BLOCKLIST_URL=http://john.bitsurge.net/public/biglist.p2p.gz
+      - TRANSMISSION_DHT_ENABLED=false
+      - LOCAL_NETWORK=10.1.0.0/24
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mnt/main/video:/data/completed
+      - /mnt/main/transmission/home:/data/transmission-home
+      - /mnt/main/transmission/config:/var/db/transmission
+
+  sonarr:
+    container_name: sonarr
+    image: linuxserver/sonarr
+    network_mode: host
+    restart: always
+    ports:
+      - 8989:8989
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mnt/main/sonarr/config:/config
+      - /mnt/main/tv:/tv
+      - /mnt/main/sonarr/downloads:/downloads

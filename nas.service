@@ -1,0 +1,20 @@
+[Unit]
+Description=NAS Service
+After=docker.service zfs-mount.service
+Requires=docker.service zfs-mount.service
+Conflicts=shutdown.target reboot.target halt.target
+
+[Service]
+User=root
+Restart=always
+NotifyAccess=all
+StartLimitInterval=90
+StartLimitBurst=3
+EnvironmentFile=/etc/environment
+WorkingDirectory=/mnt/main
+ExecStart=/usr/local/bin/docker-compose up --abort-on-container-exit --remove-orphans --no-color
+ExecStop=/usr/local/bin/docker-compose down
+ExecStopPost=/bin/sh -c '/usr/bin/docker volume ls -qf dangling=true | grep -v "^app_" | xargs -r docker volume rm'
+
+[Install]
+WantedBy=multi-user.target
