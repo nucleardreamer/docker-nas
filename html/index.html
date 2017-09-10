@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>All NAS Things</title>
+    <style type="text/css">
+      * {
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+      }
+      body,html {
+        height: 100%;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        background-color: #d2d2d2;
+      }
+      .main {
+        display: flex;
+        flex-flow: row wrap;
+        text-align: center;
+        height: 100%;
+        width: 100%;
+        text-transform: uppercase;
+        background-color: #ccc;
+        color: #222;
+        padding: .5rem;
+        align-content: flex-start;
+      }
+      a {
+        text-decoration: none;
+        outline: none;
+        color: #222;
+      }
+      a:active {
+        opacity: .5;
+        color: #222;
+      }
+      a:visited {
+        color: #222;
+      }
+      .main > div {
+        flex: 1 0 25%;
+        margin: .5rem;
+        background-color: #fff;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        padding: 0.5rem;
+        align-content: space-evenly;
+      }
+      .img img {
+        width: 100%;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div>
+        <a href="http://{{HOSTNAME}}:32400/web/index.html" target="_blank">
+          <div>Plex</div>
+          <div class="img">            
+            <img src="plex.png" />
+          </div>
+        </a>
+      </div>
+      <div>
+        <a href="http://{{HOSTNAME}}:9091/transmission/web/" target="_blank">
+          <div>Movies (Torrent)</div>
+          <div class="img">
+            <img src="transmission.png" />
+          </div>
+        </a>      
+      </div>
+      <div>
+        <a href="http://{{HOSTNAME}}:9092/transmission/web/" target="_blank">
+          <div>TV (Torrent)</div>
+          <div class="img">
+            <img src="transmission.png" />
+          </div>
+        </a>
+      </div>
+      <div>
+        <a href="http://{{HOSTNAME}}:8989/" target="_blank">
+          <div>Sonarr (TV)</div>
+          <div class="img">
+            <img src="sonarr.png" />
+          </div>
+        </a>
+      </div>
+      <div>
+        <a href="http://{{HOSTNAME}}:7878/" target="_blank">
+          <div>Radarr (Movies)</div>
+          <div class="img">
+            <img src="radarr.png" />
+          </div>
+        </a>
+      </div>  
+      <div>
+        <a href="http://{{HOSTNAME}}:9117/" target="_blank">
+          <div>Jackett (Indexer)</div>
+          <div class="img">
+            <img src="jackett.png" />
+          </div>
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
