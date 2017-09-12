@@ -24,4 +24,9 @@ sudo mkdir -p \
   $MAIN_DIR/transmission_movies/config \
   $MAIN_DIR/transmission_tv/incomplete \
   $MAIN_DIR/transmission_tv/home \
-  $MAIN_DIR/transmission_tv/config
+  $MAIN_DIR/transmission_tv/config \
+  $MAIN_DIR/sabnzbd/config \
+  $MAIN_DIR/sabnzbd/downloads \
+  $MAIN_DIR/sabnzbd/incomplete-downloads \
+  $MAIN_DIR/hydra/config \
+  $MAIN_DIR/hydra/downloads \

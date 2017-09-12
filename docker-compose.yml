@@ -1,6 +1,8 @@
+---
 version: '2'
 
 services:
+
   nginx:
     container_name: nginx
     image: nginx
@@ -10,32 +12,8 @@ services:
       - /mnt/main/nginx/config:/config
       - /mnt/main/nginx/html:/usr/share/nginx/html
     environment:
-      NGINX_HOST: ${hostname}.local
+      NGINX_HOST: bigboy.local
       NGINX_PORT: 80
-
- unifi:
-   container_name: unifi
-   image: jacobalberty/unifi:unifi5
-   network_mode: host
-   restart: unless-stopped
-   volumes:
-     - /mnt/main/unifi/data:/var/lib/unifi
-     - /mnt/main/unifi/logs:/var/log/unifi
-   environment:
-     TZ: ${TZ}
-
- netdata:
-   container_name: netdata
-   image: titpetric/netdata
-   network_mode: host
-   restart: unless-stopped
-   volumes:
-     - /proc:/host/proc:ro
-     - /sys:/host/sys:ro
-   cap_add:
-     - SYS_PTRACE
-   ports:
-     - 19999:19999
 
   mysql:
     image: mysql
@@ -73,13 +51,15 @@ services:
       OPENVPN_CONFIG: ${OPENVPN_CONFIG}
       OPENVPN_USERNAME: ${OPENVPN_USERNAME}
       OPENVPN_PASSWORD: ${OPENVPN_PASSWORD}
+      OPENVPN_OPTS: --inactive 3600 --ping 10 --ping-exit 60
       TRANSMISSION_BLOCKLIST_ENABLED: true
       TRANSMISSION_BLOCKLIST_URL: http://john.bitsurge.net/public/biglist.p2p.gz
       TRANSMISSION_DHT_ENABLED: false
       LOCAL_NETWORK: 10.1.0.0/24
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /mnt/main/movies:/data/completed
+      - /mnt/main/movies:/mnt/main/movies
+      - /mnt/main/transmission_movies/downloads:/data/completed
       - /mnt/main/transmission_movies/incomplete:/data/incomplete
       - /mnt/main/transmission_movies/home:/data/transmission-home
       - /mnt/main/transmission_movies/config:/var/db/transmission
@@ -97,6 +77,7 @@ services:
       OPENVPN_CONFIG: ${OPENVPN_CONFIG}
       OPENVPN_USERNAME: ${OPENVPN_USERNAME}
       OPENVPN_PASSWORD: ${OPENVPN_PASSWORD}
+      OPENVPN_OPTS: --inactive 3600 --ping 10 --ping-exit 60
       TRANSMISSION_BLOCKLIST_ENABLED: true
       TRANSMISSION_BLOCKLIST_URL: http://john.bitsurge.net/public/biglist.p2p.gz
       TRANSMISSION_DHT_ENABLED: false
@@ -117,7 +98,7 @@ services:
     network_mode: host
     restart: always
     ports:
-      - 8989:8989
+      - 9117:9117
     environment:
       TZ: ${TZ}
       PUID: 0
@@ -126,6 +107,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /mnt/main/sonarr/config:/config
       - /mnt/main/transmission_tv/downloads:/data/completed
+      - /mnt/main/sabnzbd/downloads:/downloads
+      - /mnt/main/sabnzbd/incomplete-downloads:/incomplete-downloads
       - /mnt/main/tv:/tv
 
   radarr:
@@ -143,7 +126,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /mnt/main/radarr/config:/config
       - /mnt/main/transmission_movies/downloads:/data/completed
+      - /mnt/main/transmission_movies/home/torrents:/torrents
       - /mnt/main/movies:/movies
+      - /mnt/main/sabnzbd/downloads:/downloads
+      - /mnt/main/sabnzbd/incomplete-downloads:/incomplete-downloads
 
   jackett:
     container_name: jackett
@@ -160,16 +146,51 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /mnt/main/jackett/config:/config
 
-# just incase, but its generally a pain in the ass
-#  syncthing:
-#    container_name: syncthing
-#    image: joeybaker/syncthing
-#    network_mode: host
-#    restart: always
-#    ports:
-#      - 8080:8080
-#      - 22000:22000
-#      - 21027:21027/udp
-#    volumes:
-#      - /mnt/main/syncthing/config:/srv/config:rw
-#      - /mnt/main/syncthing/data:/srv/data:rw
+  sab:
+    container_name: sab
+    image: binhex/arch-sabnzbdvpn
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8080:8080
+      - 8090:8090
+      - 8118:8118
+    environment:
+      - VPN_ENABLED=yes
+      - VPN_USER=${OPENVPN_USERNAME}
+      - VPN_PASS=${OPENVPN_PASSWORD}
+      - VPN_PROV=pia
+      - VPN_REMOTE=${OPENVPN_REMOTE}
+      - STRICT_PORT_FORWARD=no
+      - ENABLE_PRIVOXY=yes
+      - LAN_NETWORK=10.1.0.0/24
+      - NAME_SERVERS=209.222.18.222,37.235.1.174,8.8.8.8,209.222.18.218,37.235.1.177,8.8.4.4
+      - ADDITIONAL_PORTS=8081
+      - DEBUG=false
+      - UMASK=000
+      - TZ=${TZ}
+      - PUID=0
+      - PGID=0
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mnt/main/openvpn:/config/openvpn
+      - /mnt/main/sabnzbd/config:/config
+      - /mnt/main/sabnzbd/downloads:/downloads
+      - /mnt/main/sabnzbd/incomplete-downloads:/incomplete-downloads
+
+  hydra:
+    container_name: hydra
+    image: linuxserver/hydra
+    network_mode: host
+    restart: always
+    ports:
+      - 5075:5075
+    environment:
+      TZ: ${TZ}
+      PUID: 0
+      PGID: 0
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mnt/main/hydra/config:/config
+      - /mnt/main/hydra/downloads:/downloads
