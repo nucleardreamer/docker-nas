@@ -30,3 +30,7 @@ sudo mkdir -p \
   $MAIN_DIR/sabnzbd/incomplete-downloads \
   $MAIN_DIR/hydra/config \
   $MAIN_DIR/hydra/downloads \
+  $MAIN_DIR/factorio \
+  $MAIN_DIR/octoprint/config \
+  $MAIN_DIR/octoprint/venv \
+  $MAIN_DIR/htpcmanager/config
