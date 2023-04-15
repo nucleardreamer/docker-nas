@@ -11,13 +11,10 @@ sudo mkdir -p \
   $MAIN_DIR/tv \
   $MAIN_DIR/nginx/config \
   $MAIN_DIR/nginx/html \
-  $MAIN_DIR/unifi/data \
-  $MAIN_DIR/unifi/logs \
   $MAIN_DIR/mysql/data \
   $MAIN_DIR/plex/config \
   $MAIN_DIR/plex/transcode \
   $MAIN_DIR/sonarr/config \
-  $MAIN_DIR/jackett/config \
   $MAIN_DIR/radarr/config \
   $MAIN_DIR/transmission_movies/incomplete \
   $MAIN_DIR/transmission_movies/home \
@@ -25,12 +22,8 @@ sudo mkdir -p \
   $MAIN_DIR/transmission_tv/incomplete \
   $MAIN_DIR/transmission_tv/home \
   $MAIN_DIR/transmission_tv/config \
-  $MAIN_DIR/sabnzbd/config \
-  $MAIN_DIR/sabnzbd/downloads \
-  $MAIN_DIR/sabnzbd/incomplete-downloads \
-  $MAIN_DIR/hydra/config \
-  $MAIN_DIR/hydra/downloads \
-  $MAIN_DIR/factorio \
-  $MAIN_DIR/octoprint/config \
-  $MAIN_DIR/octoprint/venv \
   $MAIN_DIR/htpcmanager/config
+
+sudo cp nas.service /lib/systemd/system/nas.service
+
+sudo systemctl enable nas.service
